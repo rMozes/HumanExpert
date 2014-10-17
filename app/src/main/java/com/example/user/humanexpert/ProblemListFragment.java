@@ -1,15 +1,13 @@
 package com.example.user.humanexpert;
 
 import android.app.ListFragment;
-import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.github.kevinsawicki.http.HttpRequest;
 
@@ -17,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -26,14 +23,13 @@ import java.util.ArrayList;
 public class ProblemListFragment extends ListFragment {
     ArrayList<Scenario> scenarios;
     private Scenario scenario;
-    private View view;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         getActivity().setTitle(R.string.scenarios_title);
         scenarios = new ArrayList<Scenario>();
         scenario = new Scenario();
-        //setupAdapter(scenarios);
+        setupAdapter();
     }
 
 
@@ -51,22 +47,23 @@ public class ProblemListFragment extends ListFragment {
         protected ArrayList<Scenario> doInBackground(Void... params) {
             ArrayList<Scenario> list = new ArrayList<Scenario>();
             Scenario item;
-            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
             HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/scenarios/");
             if (request.code() == 200) {
                 String response = request.body();
                 try {
-                    jsonArray = new JSONArray(response);
+                    jsonObject = new JSONObject(response);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 try {
+                    JSONArray jsonArray = jsonObject.getJSONArray("scenarios");
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String text = (String) jsonObject.get("text");
-                        String id = (String) jsonObject.get("id");
-                        String caseId = (String) jsonObject.get("caseId");
-                        item = downloadInfo(text, id, caseId);
+                        JSONObject c = jsonArray.getJSONObject(i);
+                        String text = c.getString("text");
+                        String id = c.getString("id");
+                        String caseId = c.getString("caseId");
+                        item = downloadInfo(text, id,caseId);
                         list.add(item);
                     }
                 } catch (JSONException e) {
@@ -87,43 +84,22 @@ public class ProblemListFragment extends ListFragment {
         protected void onPostExecute(ArrayList<Scenario> list) {
             super.onPostExecute(list);
             scenarios = list;
-            setupAdapter(list);
+            setupAdapter();
         }
     }
-    public void setupAdapter (ArrayList<Scenario> scenarios) {
-        ScenariosAdapter adapter = new ScenariosAdapter(getActivity(), android.R.layout.simple_list_item_1, scenarios);
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Scenario sc = (Scenario)(getListAdapter()).getItem(position);
+        Intent intent =  new Intent("SendScenarioObject");
+        intent.putExtra("scenatioObject", sc.getCaseId());
+        getActivity().sendBroadcast(intent);
+    }
+
+    public void setupAdapter () {
+        ArrayAdapter<Scenario> adapter = new ArrayAdapter<Scenario>(getActivity(), android.R.layout.simple_list_item_1, scenarios);
         setListAdapter(adapter);
     }
-    public class ScenariosAdapter extends ArrayAdapter<Scenario> implements Serializable {
-        private Context context;
-        private int resource;
 
-        public ScenariosAdapter(Context context,int resource,ArrayList<Scenario> scenarios) {
-            super(context, resource, scenarios);
-            this.context = context;
-            this.resource = resource;
-        }
-
-        class ViewHolder {
-            TextView nameTextView;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder;
-            if(convertView==null){
-                LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = mInflater.inflate(resource, parent, false);
-                viewHolder = new ViewHolder();
-                viewHolder.nameTextView = (TextView) convertView.findViewById(R.id.problem_title);
-                convertView.setTag(viewHolder);
-            }else{
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            final Scenario item = getItem(position);
-            viewHolder.nameTextView.setText(item.getProblemTitle());
-            return convertView;
-        }
-
-    }
 }
