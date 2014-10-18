@@ -1,7 +1,6 @@
 package com.example.user.humanexpert;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,13 +41,7 @@ public class CaseFragment extends Fragment {
         caseFragment.setArguments(args);
         return caseFragment;
     }
-    public static CaseFragment newInstance(int caseId, int newCaseId) {
-        Bundle args = new Bundle();
-        args.putInt("caseId", caseId);
-        CaseFragment caseFragment = new CaseFragment();
-        caseFragment.setArguments(args);
-        return caseFragment;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,24 +80,26 @@ public class CaseFragment extends Fragment {
             Scenario item = params[0];
             int caseId = item.getCaseId();
             Case cs = new Case();
-            HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/cases/" + String.valueOf(caseId));
+            HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/cases/" + caseId);
             if (request.code() == 200) {
                 String response = request.body();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    JSONObject j = jsonObject.optJSONObject("case");
-                    String text = j.optString("text");
-                    String url = j.optString("image");
-                    String id = j.optString("id");
+                    JSONObject j = jsonObject.getJSONObject("case");
+                    String text = j.getString("text");
+                    String url = j.getString("image");
+                    String id = j.getString("id");
                     cs = downloadInfo(text, url, id);
-                    JSONArray jsonArray = j.optJSONArray("answers");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject answers = jsonArray.optJSONObject(i);
-                        String newText = answers.optString("text");
-                        String newId = answers.optString("id");
-                        int newCaseId = answers.optInt("CaseId");
-                        answer = downloadAnswer(newText, newId, newCaseId);
-                        list.add(answer);
+                    if(j.has("answers")) {
+                        JSONArray jsonArray = j.optJSONArray("answers");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject answers = jsonArray.getJSONObject(i);
+                            String newText = answers.getString("text");
+                            int newId = answers.getInt("id");
+                            int newCaseId = answers.getInt("caseId");
+                            answer = downloadAnswer(newText, newId, newCaseId);
+                            list.add(answer);
+                        }
                     }
 
                 } catch (JSONException e) {
@@ -119,34 +114,32 @@ public class CaseFragment extends Fragment {
         protected void onPostExecute(Case result) {
             super.onPostExecute(result);
             cs = result;
-            //replaceFragment(cs);
-            btn_1.setText(result.getList().get(0).getNewText());
-            btn_2.setText(result.getList().get(1).getNewText());
+            scenario.setaCase(cs);
+            //btn_1.setText(result.getList().get(0).getNewText());
+           // btn_2.setText(result.getList().get(1).getNewText());
             text.setText(result.getTextQuestion());
             imageView.setImageBitmap(bitmap);
             btn_1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    int mess = intent.getIntExtra("scenatioObject",cs.getList().get(0).getNewCaseId());
-                    final Fragment fragment = CaseFragment.newInstance(mess);
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.replace(R.id.fragmentContainer, fragment);
-                    ft.addToBackStack("tag");
-                    ft.commitAllowingStateLoss();
+                    Intent intent =  new Intent("SendScenarioObject");
+                    intent.putExtra("scenatioObject", scenario.getaCase().getList().get(0).getNewCaseId());
+                    getActivity().sendBroadcast(intent);
                 }
             });
             btn_2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    int mess = intent.getIntExtra("scenatioObject",cs.getList().get(1).getNewCaseId());
-                    final Fragment fragment = CaseFragment.newInstance(mess);
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.replace(R.id.fragmentContainer, fragment);
-                    ft.addToBackStack("tag");
-                    ft.commitAllowingStateLoss();
-                }
+                    if(scenario.getaCase().getList().get(1).getNewId() == 8) {
+                        Intent intent = new Intent("SendScenarioObject");
+                        intent.putExtra("scenatioObject", scenario.getaCase().getList().get(1).getNewId()+1);
+                        getActivity().sendBroadcast(intent);
+                    }
+                    else{
+                        Intent intent = new Intent("SendScenarioObject");
+                        intent.putExtra("scenatioObject", scenario.getaCase().getList().get(1).getNewId());
+                        getActivity().sendBroadcast(intent);}
+                        }
             });
         }
 
@@ -155,10 +148,9 @@ public class CaseFragment extends Fragment {
             item.setTextQuestion(text);
             item.setImageUrl(url);
             item.setId(id);
-            //item.setAnswers(answers);
             return item;
         }
-        private Answer downloadAnswer(String newText, String newId, int caseId) {
+        private Answer downloadAnswer(String newText, int newId, int caseId) {
             Answer item = new Answer();
             item.setNewText(newText);
             item.setNewId(newId);
@@ -178,13 +170,5 @@ public class CaseFragment extends Fragment {
             }
             return mIcon;
         }
-//        private void replaceFragment (Case cs){
-//
-//            for(int i = 0; i < cs.getAnswers().length; i++) {
-//                btn_1.setText(cs.getAnswers()[i]);
-//                btn_2.setText(cs.getAnswers()[i+1]);
-//
-//            }
-//        }
   }
 }

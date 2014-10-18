@@ -7,6 +7,15 @@ public class Scenario {
     private String id;
     private String problemTitle;
     private int caseId;
+    private Case aCase;
+
+    public Case getaCase() {
+        return aCase;
+    }
+
+    public void setaCase(Case aCase) {
+        this.aCase = aCase;
+    }
 
     Scenario(){}
 

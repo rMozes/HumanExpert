@@ -14,22 +14,26 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private FragmentMessBroadcastReceiver fragmentMessBroadcastReceiver;
     private Scenario scenario;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         fragmentMessBroadcastReceiver = new FragmentMessBroadcastReceiver();
            scenario = new Scenario();
-
+        int orient = this.getResources().getConfiguration().orientation;
+        if (orient == 1) {
             //Portret
             final Fragment fragment = new ProblemListFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.replace(R.id.fragmentContainer, fragment);
             ft.commitAllowingStateLoss();
-
+        }else {
+            //LANDSCAPE;
+            final Fragment fragment = CaseFragment.newInstance(scenario.getCaseId());
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fragmentContainer, fragment);
+            ft.commitAllowingStateLoss();
+        }
     }
     @Override
     protected void onStart() {

@@ -5,7 +5,7 @@ package com.example.user.humanexpert;
  */
 public class Answer {
     private String newText;
-    private String newId;
+    private int newId;
     private int newCaseId;
 
     Answer() {
@@ -19,11 +19,11 @@ public class Answer {
         this.newText = newText;
     }
 
-    public String getNewId() {
+    public int getNewId() {
         return newId;
     }
 
-    public void setNewId(String newId) {
+    public void setNewId(int newId) {
         this.newId = newId;
     }
 
