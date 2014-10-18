@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private FragmentMessBroadcastReceiver fragmentMessBroadcastReceiver;
     private Scenario scenario;
-    String mess = null;
+
 
 
     @Override
@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         fragmentMessBroadcastReceiver = new FragmentMessBroadcastReceiver();
-
+           scenario = new Scenario();
 
             //Portret
             final Fragment fragment = new ProblemListFragment();
@@ -44,8 +44,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("SendScenarioObject")) {
-                mess = intent.getStringExtra("scenatioObject");
-
+                int mess = intent.getIntExtra("scenatioObject", scenario.getCaseId());
                 Toast.makeText(context, "" + mess, Toast.LENGTH_LONG).show();
                 final Fragment fragment = CaseFragment.newInstance(mess);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();

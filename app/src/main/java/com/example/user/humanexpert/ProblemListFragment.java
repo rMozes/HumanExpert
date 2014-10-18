@@ -62,7 +62,7 @@ public class ProblemListFragment extends ListFragment {
                         JSONObject c = jsonArray.getJSONObject(i);
                         String text = c.getString("text");
                         String id = c.getString("id");
-                        String caseId = c.getString("caseId");
+                        int caseId = c.getInt("caseId");
                         item = downloadInfo(text, id,caseId);
                         list.add(item);
                     }
@@ -73,7 +73,7 @@ public class ProblemListFragment extends ListFragment {
             return list;
         }
 
-        private Scenario downloadInfo (String text, String id, String caseId) {
+        private Scenario downloadInfo (String text, String id, int caseId) {
             Scenario item = new Scenario();
             item.setProblemTitle(text);
             item.setId(id);

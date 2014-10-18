@@ -6,9 +6,11 @@ package com.example.user.humanexpert;
 public class Answer {
     private String newText;
     private String newId;
-    private String newCaseId;
+    private int newCaseId;
 
-    Answer(){}
+    Answer() {
+    }
+
     public String getNewText() {
         return newText;
     }
@@ -25,11 +27,11 @@ public class Answer {
         this.newId = newId;
     }
 
-    public String getNewCaseId() {
+    public int getNewCaseId() {
         return newCaseId;
     }
 
-    public void setNewCaseId(String newCaseId) {
+    public void setNewCaseId(int newCaseId) {
         this.newCaseId = newCaseId;
     }
 }

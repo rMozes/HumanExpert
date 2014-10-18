@@ -28,7 +28,6 @@ import java.util.ArrayList;
  * Created by User on 17.10.2014.
  */
 public class CaseFragment extends Fragment {
-    private Values values;
     private Case cs;
     private Scenario scenario;
     private ImageView imageView;
@@ -36,9 +35,16 @@ public class CaseFragment extends Fragment {
     private Button btn_1;
     private Button btn_2;
 
-    public static CaseFragment newInstance(String caseId) {
+    public static CaseFragment newInstance(int caseId) {
         Bundle args = new Bundle();
-        args.putString("caseId", caseId);
+        args.putInt("caseId", caseId);
+        CaseFragment caseFragment = new CaseFragment();
+        caseFragment.setArguments(args);
+        return caseFragment;
+    }
+    public static CaseFragment newInstance(int caseId, int newCaseId) {
+        Bundle args = new Bundle();
+        args.putInt("caseId", caseId);
         CaseFragment caseFragment = new CaseFragment();
         caseFragment.setArguments(args);
         return caseFragment;
@@ -48,8 +54,9 @@ public class CaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        cs = new Case();
         scenario = new Scenario();
-        scenario.setCaseId(getArguments().getString("caseId"));
+        scenario.setCaseId(getArguments().getInt("caseId"));
     }
 
     @Override
@@ -59,18 +66,7 @@ public class CaseFragment extends Fragment {
         text = (TextView) v.findViewById(R.id.tv_text);
         btn_1 = (Button) v.findViewById(R.id.btn_1);
         btn_2 = (Button) v.findViewById(R.id.btn_2);
-        btn_1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                String mess = intent.getStringExtra("scenatioObject");
-                final Fragment fragment = CaseFragment.newInstance(mess);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.fragmentContainer, fragment);
-                ft.addToBackStack("tag");
-                ft.commitAllowingStateLoss();
-            }
-        });
+
         return v;
     }
 
@@ -81,22 +77,17 @@ public class CaseFragment extends Fragment {
         jsonToArrayListPicture.execute(scenario);
     }
 
-    class Values{
-        public ArrayList<Answer> list = null;
-        public Case aCase;
-    }
 
-    class JsonToArrayListPicture extends AsyncTask<Scenario, Void, Values> {
+    class JsonToArrayListPicture extends AsyncTask<Scenario, Void, Case> {
         Bitmap bitmap = null;
 
-        protected Values doInBackground(Scenario... params) {
-            Values values = new Values();
+        protected Case doInBackground(Scenario... params) {
             ArrayList<Answer> list = new  ArrayList<Answer>();
             Answer answer;
             Scenario item = params[0];
-            String caseId = item.getCaseId();
+            int caseId = item.getCaseId();
             Case cs = new Case();
-            HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/cases/" + caseId);
+            HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/cases/" + String.valueOf(caseId));
             if (request.code() == 200) {
                 String response = request.body();
                 try {
@@ -111,7 +102,7 @@ public class CaseFragment extends Fragment {
                         JSONObject answers = jsonArray.optJSONObject(i);
                         String newText = answers.optString("text");
                         String newId = answers.optString("id");
-                        String newCaseId = answers.optString("CaseId");
+                        int newCaseId = answers.optInt("CaseId");
                         answer = downloadAnswer(newText, newId, newCaseId);
                         list.add(answer);
                     }
@@ -120,20 +111,43 @@ public class CaseFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-            values.list = list;
-            values.aCase = cs;
+            cs.setList(list);
             bitmap = loadPicture(cs.getImageUrl());
-            return values;
+            return cs;
         }
 
-        protected void onPostExecute(Values result) {
+        protected void onPostExecute(Case result) {
             super.onPostExecute(result);
-            values = result;
+            cs = result;
             //replaceFragment(cs);
-            btn_1.setText(result.list.get(0).getNewText());
-            btn_2.setText(result.list.get(1).getNewText());
-            text.setText(result.aCase.getTextQuestion());
+            btn_1.setText(result.getList().get(0).getNewText());
+            btn_2.setText(result.getList().get(1).getNewText());
+            text.setText(result.getTextQuestion());
             imageView.setImageBitmap(bitmap);
+            btn_1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    int mess = intent.getIntExtra("scenatioObject",cs.getList().get(0).getNewCaseId());
+                    final Fragment fragment = CaseFragment.newInstance(mess);
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragmentContainer, fragment);
+                    ft.addToBackStack("tag");
+                    ft.commitAllowingStateLoss();
+                }
+            });
+            btn_2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    int mess = intent.getIntExtra("scenatioObject",cs.getList().get(1).getNewCaseId());
+                    final Fragment fragment = CaseFragment.newInstance(mess);
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragmentContainer, fragment);
+                    ft.addToBackStack("tag");
+                    ft.commitAllowingStateLoss();
+                }
+            });
         }
 
         private Case downloadInfo(String text, String url, String id) {
@@ -144,7 +158,7 @@ public class CaseFragment extends Fragment {
             //item.setAnswers(answers);
             return item;
         }
-        private Answer downloadAnswer(String newText, String newId, String caseId) {
+        private Answer downloadAnswer(String newText, String newId, int caseId) {
             Answer item = new Answer();
             item.setNewText(newText);
             item.setNewId(newId);

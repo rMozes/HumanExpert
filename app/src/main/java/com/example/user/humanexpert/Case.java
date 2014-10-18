@@ -1,5 +1,7 @@
 package com.example.user.humanexpert;
 
+import java.util.ArrayList;
+
 /**
  * Created by User on 17.10.2014.
  */
@@ -7,7 +9,7 @@ public class Case {
     private String id;
     private String textQuestion;
     private String imageUrl;
-    private String answers [];
+    private ArrayList<Answer> list;
 
 
     Case(){}
@@ -35,13 +37,11 @@ public class Case {
         this.imageUrl = imageUrl;
     }
 
-    public String[] getAnswers() {
-        return answers;
+    public ArrayList<Answer> getList() {
+        return list;
     }
 
-    public void setAnswers(String[] answers) {
-        this.answers = answers;
+    public void setList(ArrayList<Answer> list) {
+        this.list = list;
     }
-
-
 }

@@ -6,7 +6,7 @@ package com.example.user.humanexpert;
 public class Scenario {
     private String id;
     private String problemTitle;
-    private String caseId;
+    private int caseId;
 
     Scenario(){}
 
@@ -18,11 +18,11 @@ public class Scenario {
         this.id = id;
     }
 
-    public String getCaseId() {
+    public int getCaseId() {
         return caseId;
     }
 
-    public void setCaseId(String caseId) {
+    public void setCaseId(int caseId) {
         this.caseId = caseId;
     }
 
