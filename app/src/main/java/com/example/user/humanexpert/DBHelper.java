@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by User on 13.10.2014.
  */
@@ -74,6 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
         long row_id = db.insert(TABLE_SCEN, null, values);
         return row_id;
     }
+
     public long createCase(CaseClass caseClass) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -85,6 +89,7 @@ public class DBHelper extends SQLiteOpenHelper {
         long row_id = db.insert(TABLE_CASE, null, values);
         return row_id;
     }
+
     public long createAnswer(Answer answer) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -138,6 +143,60 @@ public class DBHelper extends SQLiteOpenHelper {
         answer.setNewCaseId(c.getInt(c.getColumnIndex(KEY_ANSWER_CASEID)));
         return answer;
     }
+
+    public List<Scenario> getAllScenarios() {
+        List<Scenario> scenariosList = new ArrayList<Scenario>();
+        String selectQuery = "SELECT  * FROM " + TABLE_SCEN;
+        Log.e(LOG, selectQuery);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                Scenario scenario = new Scenario();
+                scenario.setId(c.getInt(c.getColumnIndex(KEY_SCEN_ID)));
+                scenario.setProblemTitle((c.getString(c.getColumnIndex(KEY_SCEN_TEXT))));
+                scenario.setCaseId(c.getInt(c.getColumnIndex(KEY_SCEN_CASEID)));
+                scenariosList.add(scenario);
+            } while (c.moveToNext());
+        }
+        return scenariosList;
+    }
+
+    public List<CaseClass> getAllCases() {
+        List<CaseClass> casesList = new ArrayList<CaseClass>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CASE;
+        Log.e(LOG, selectQuery);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                CaseClass caseClass = new CaseClass();
+                caseClass.setId(c.getInt(c.getColumnIndex(KEY_CASE_ID)));
+                caseClass.setText((c.getString(c.getColumnIndex(KEY_CASE_TEXT))));
+                caseClass.setImageUrl(c.getString(c.getColumnIndex(KEY_CASE_IMAGE)));
+                casesList.add(caseClass);
+            } while (c.moveToNext());
+        }
+        return casesList;
+    }
+    public List<Answer> getAnswers() {
+        List<Answer> answersList = new ArrayList<Answer>();
+        String selectQuery = "SELECT  * FROM " + TABLE_ANSWER;
+        Log.e(LOG, selectQuery);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                Answer answer = new Answer();
+                answer.setNewId(c.getInt(c.getColumnIndex(KEY_ANSWER_ID)));
+                answer.setNewText((c.getString(c.getColumnIndex(KEY_ANSWER_TEXT))));
+                answer.setNewCaseId(c.getInt(c.getColumnIndex(KEY_ANSWER_CASEID)));
+                answersList.add(answer);
+            } while (c.moveToNext());
+        }
+        return answersList;
+    }
+
 
     public void closeDB() {
         SQLiteDatabase db = this.getReadableDatabase();

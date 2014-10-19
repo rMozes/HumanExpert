@@ -25,7 +25,7 @@ import java.io.InputStream;
  */
 public class CaseFragment extends Fragment {
     private CaseClass cs;
-    private Scenario scenario, scenario2;
+    private Scenario scenario;
     private ImageView imageView;
     private TextView text;
     private Button btn_1;
