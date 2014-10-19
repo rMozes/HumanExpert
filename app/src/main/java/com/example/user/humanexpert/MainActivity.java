@@ -39,20 +39,24 @@ public class MainActivity extends Activity {
         registerReceiver(fragmentMessBroadcastReceiver, filter);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(fragmentMessBroadcastReceiver);
+    }
+
     class FragmentMessBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("SendScenarioObject")) {
                 int mess = intent.getIntExtra("scenatioObject", scenario.getCaseId());
+
                 Toast.makeText(context, "" + mess, Toast.LENGTH_LONG).show();
                 final Fragment fragment = CaseFragment.newInstance(mess);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragmentContainer, fragment);
-                ft.addToBackStack("tag");
-                ft.commitAllowingStateLoss();
-
-
+                ft.commit();
             }
         }
     }

@@ -1,11 +1,14 @@
 package com.example.user.humanexpert;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by User on 17.10.2014.
  */
 public class Answer {
+
     private String newText;
-    private String newId;
+    private int newId;
     private int newCaseId;
 
     Answer() {
@@ -19,11 +22,11 @@ public class Answer {
         this.newText = newText;
     }
 
-    public String getNewId() {
+    public int getNewId() {
         return newId;
     }
 
-    public void setNewId(String newId) {
+    public void setNewId(int newId) {
         this.newId = newId;
     }
 
