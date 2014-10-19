@@ -4,26 +4,17 @@ package com.example.user.humanexpert;
  * Created by User on 16.10.2014.
  */
 public class Scenario {
-    private String id;
+    private int id;
     private String problemTitle;
     private int caseId;
-    private Case aCase;
-
-    public Case getaCase() {
-        return aCase;
-    }
-
-    public void setaCase(Case aCase) {
-        this.aCase = aCase;
-    }
 
     Scenario(){}
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

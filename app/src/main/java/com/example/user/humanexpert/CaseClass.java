@@ -5,28 +5,29 @@ import java.util.ArrayList;
 /**
  * Created by User on 17.10.2014.
  */
-public class Case {
-    private String id;
-    private String textQuestion;
+public class CaseClass {
+    private int id;
+    private String text;
     private String imageUrl;
     private ArrayList<Answer> list;
 
 
-    Case(){}
-    public String getId() {
+    CaseClass(){}
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getTextQuestion() {
-        return textQuestion;
+    public String getText() {
+        return text;
     }
 
-    public void setTextQuestion(String textQuestion) {
-        this.textQuestion = textQuestion;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getImageUrl() {
