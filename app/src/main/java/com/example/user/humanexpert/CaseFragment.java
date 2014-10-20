@@ -2,6 +2,7 @@ package com.example.user.humanexpert;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -30,7 +31,9 @@ public class CaseFragment extends Fragment {
     private TextView text;
     private Button btn_1;
     private Button btn_2;
-
+    private Answer answer;
+    private DBController dbController;
+    private ProgressDialog PD;
     public static CaseFragment newInstance(int caseId) {
         Bundle args = new Bundle();
         args.putInt("caseId", caseId);
@@ -145,6 +148,33 @@ public class CaseFragment extends Fragment {
                 e.printStackTrace();
             }
             return mIcon;
+        }
+    }
+    private class DataBaseAsync extends AsyncTask<CaseClass, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            PD = new ProgressDialog(getActivity());
+            PD.setTitle("Please Wait..");
+            PD.setMessage("Loading...");
+            PD.setCancelable(false);
+            PD.show();
+        }
+        @Override
+        protected Void doInBackground(CaseClass... params) {
+            CaseClass item = params[0];
+            dbController.open();
+            dbController.insertScen(scenario);
+            dbController.insertCase(item);
+            dbController.insertAnswer(answer);
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            dbController.close();
+            PD.dismiss();
         }
     }
 }

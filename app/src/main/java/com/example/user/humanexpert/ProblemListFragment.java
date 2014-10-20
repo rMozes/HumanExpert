@@ -42,7 +42,6 @@ public class ProblemListFragment extends ListFragment {
     private class ProblemDownloadFromJSonAsynkTask extends AsyncTask<Void, Void, ArrayList<Scenario>> {
         private static final String TAG = "getList";
 
-
         @Override
         protected ArrayList<Scenario> doInBackground(Void... params) {
             ArrayList<Scenario> list = new ArrayList<Scenario>();
