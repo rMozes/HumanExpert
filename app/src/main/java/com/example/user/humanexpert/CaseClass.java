@@ -1,20 +1,26 @@
 package com.example.user.humanexpert;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by User on 17.10.2014.
  */
-public class CaseClass implements Serializable {
-
-
+public class CaseClass {
+    private int id;
     private String text;
     private String imageUrl;
-    private int id;
     private ArrayList<Answer> list;
+
+
+    CaseClass(){}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getText() {
         return text;
@@ -30,14 +36,6 @@ public class CaseClass implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public ArrayList<Answer> getList() {
