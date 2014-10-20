@@ -47,10 +47,10 @@ public class CaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        dbController = new DBController(getActivity());
         cs = new CaseClass();
         scenario = new Scenario();
         scenario.setCaseId(getArguments().getInt("caseId"));
-
     }
 
     @Override
@@ -88,10 +88,24 @@ public class CaseFragment extends Fragment {
             Scenario item = params[0];
             int caseId = item.getCaseId();
             CaseClass cas = new CaseClass();
+            cas = dbController
+                    .open()
+                    .getCaseClass(caseId);
+            //Answers поставити в касекласс
+
+            if (cas != null && cas.getList() != null) {
+                return cas;
+            }
             HttpRequest request = HttpRequest.get("http://expert-system.internal.shinyshark.com/cases/" + caseId);
             if (request.code() == 200) {
                 String response = request.body();
                 cas = mGson.fromJson(response, CaseClass.class);
+                dbController
+                        .open()
+                        .insertCase(cas);
+                for (int i = 0; i < cas.getList().size(); i++) {
+                    dbController.insertAnswer(cas.getList().get(i));
+                }
                 if (cas.getImageUrl() != null) {
                     bitmap = loadPicture(cas.getImageUrl());
                 }

@@ -31,15 +31,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_SCEN = "CREATE TABLE "
             + TABLE_SCEN + "(" + KEY_SCEN_ID + " INTEGER PRIMARY KEY," + KEY_SCEN_TEXT
-            + " TEXT," + KEY_SCEN_CASEID + " INTEGER " + ")";
+            + " TEXT," + KEY_SCEN_CASEID + " INTEGER " + ");";
 
     private static final String CREATE_TABLE_CASE = "CREATE TABLE " + TABLE_CASE
             + "(" + KEY_CASE_ID + " INTEGER PRIMARY KEY," + KEY_CASE_TEXT + " TEXT,"
-            + KEY_CASE_IMAGE + " TEXT " + ")";
+            + KEY_CASE_IMAGE + " TEXT " + ");";
 
     private static final String CREATE_TABLE_ANSWER = "CREATE TABLE "
             + TABLE_ANSWER + "(" + KEY_ANSWER_ID + " INTEGER PRIMARY KEY,"
-            + KEY_ANSWER_TEXT + " TEXT," + KEY_ANSWER_CASEID + " INTEGER " + ")";
+            + KEY_ANSWER_TEXT + " TEXT," + KEY_ANSWER_CASEID + " INTEGER " + ");";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
